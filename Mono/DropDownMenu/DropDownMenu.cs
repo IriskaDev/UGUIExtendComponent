@@ -139,7 +139,7 @@ namespace UnityEngine.UI
 
         private void OnMenuShown()
         {
-            Debug.Log("show callback called!!");
+            
         }
 
         private void OnHideMenu(PointerEventData evtDat)
@@ -160,7 +160,6 @@ namespace UnityEngine.UI
 
         private void OnMenuHidden()
         {
-            Debug.Log("callback called!");
             if (m_compMask != null)
                 m_compMask.gameObject.SetActive(false);
             m_compMenuFrame.gameObject.SetActive(false);
