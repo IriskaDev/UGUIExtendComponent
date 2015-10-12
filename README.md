@@ -1,4 +1,4 @@
 # UGUIExtendComponent
-Extend Component of UGUI
+Extend Components of UGUI
 
 iTween lib is required
