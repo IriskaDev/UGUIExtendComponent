@@ -40,8 +40,9 @@ namespace UnityEngine.UI
         public GameObject itemObj;
         public RectTransform cachedTransform;
 
-        public void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             itemObj = gameObject;
             cachedTransform = gameObject.GetComponent<RectTransform>();
         }

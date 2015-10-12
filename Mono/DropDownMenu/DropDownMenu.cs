@@ -181,10 +181,12 @@ namespace UnityEngine.UI
         {
             if (m_txtSelectedItem != null)
                 m_txtSelectedItem.text = item.text;
+            OnHideMenu(null);
         }
 
-        public void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (m_btnShowMenu != null)
             {
                 UGUIEventHandler.AddListener(m_btnShowMenu.gameObject, UGUIEventType.POINTER_CLICK, OnShowMenu);
@@ -213,6 +215,17 @@ namespace UnityEngine.UI
             AddItem("Item C");
             AddItem("Item D");
             AddItem("Item E");
+        }
+
+        void OnGUI()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (!IsHiding)
+                {
+                    OnHideMenu(null);
+                }
+            }
         }
     }
 }
