@@ -22,6 +22,7 @@ namespace UnityEngine.UI.Logic
             m_compMonoCtrl = mono;
             m_lLogicInsList = new List<T>();
             m_dictLogicInsMapper = new Dictionary<GameObject, T>();
+            mono.AddOnSelectedCallback(OnItemSelected);
         }
 
         public void AddItem(T item)
@@ -69,6 +70,18 @@ namespace UnityEngine.UI.Logic
                 }
                 m_tCurSelectedItem = item;
                 m_compMonoCtrl.CurItemDesc = item.GetItemDesc();
+            }
+        }
+
+        private void OnItemSelected(GameObject itemObj)
+        {
+            if (onSelectedCallback != null)
+            {
+                T item;
+                if (m_dictLogicInsMapper.TryGetValue(itemObj, out item))
+                {
+                    onSelectedCallback.Invoke(item);
+                }
             }
         }
 

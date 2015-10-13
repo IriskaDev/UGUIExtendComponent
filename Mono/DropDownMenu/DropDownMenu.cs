@@ -290,6 +290,16 @@ namespace UnityEngine.UI
                 onItemSelected.Invoke(item.gameObject);
         }
 
+        public void AddOnSelectedCallback(ON_ITEM_SELECTED func)
+        {
+            onItemSelected += func;
+        }
+
+        public void RemoveOnSelectedCallback(ON_ITEM_SELECTED func)
+        {
+            onItemSelected -= func;
+        }
+
         protected override void Awake()
         {
             base.Awake();
