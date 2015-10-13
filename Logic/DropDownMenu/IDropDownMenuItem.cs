@@ -1,10 +1,13 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IDropDownMenuItem
+namespace UnityEngine.UI.Logic
 {
-    string GetItemDesc();
-    void SetItemObj(GameObject obj);
-    GameObject GetItemObj();
-}
+    public interface IDropDownMenuItem
+    {
+        string GetItemDesc();
+        void SetItemObj(GameObject obj);
+        GameObject GetItemObj();
+    }
 
+}

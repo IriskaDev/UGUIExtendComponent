@@ -2,22 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DropMenuItemBase : IDropDownMenuItem
+namespace UnityEngine.UI.Logic
 {
-    private GameObject m_objTargetItem;
-
-    public virtual string GetItemDesc()
+    public class DropMenuItemBase : IDropDownMenuItem
     {
-        throw new NotImplementedException();
-    }
+        private GameObject m_objTargetItem;
 
-    public void SetItemObj(GameObject obj)
-    {
-        m_objTargetItem = obj;
-    }
+        public virtual string GetItemDesc()
+        {
+            throw new NotImplementedException();
+        }
 
-    public GameObject GetItemObj()
-    {
-        return m_objTargetItem;
+        public void SetItemObj(GameObject obj)
+        {
+            m_objTargetItem = obj;
+        }
+
+        public GameObject GetItemObj()
+        {
+            return m_objTargetItem;
+        }
     }
 }
