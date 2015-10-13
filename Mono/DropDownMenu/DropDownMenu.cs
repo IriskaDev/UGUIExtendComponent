@@ -149,8 +149,8 @@ namespace UnityEngine.UI
             float topPadding = m_compMenuFrame.grid.padding.top;
             float bottomPadding = m_compMenuFrame.grid.padding.bottom;
             float spaceY = m_compMenuFrame.grid.spacing.y;
-            float reslutY = childCnt * cellY + (childCnt - 1) * spaceY + topPadding + bottomPadding;
-            maskRect.sizeDelta = new Vector2(maskRect.rect.width, reslutY);
+            float resultY = childCnt * cellY + (childCnt - 1) * spaceY + topPadding + bottomPadding;
+            maskRect.sizeDelta = new Vector2(maskRect.rect.width, resultY);
         }
 
         public DropDownMenuItem AddSingleItem(string itemDesc)
