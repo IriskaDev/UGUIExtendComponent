@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
 
@@ -7,6 +8,9 @@ namespace UnityEngine.UI
 {
     public class DropDownMenu : UIBehaviour
     {
+        public delegate void ON_ITEM_SELECTED(GameObject item);
+        private ON_ITEM_SELECTED onItemSelected;
+
         [HideInInspector][SerializeField] Button m_btnShowMenu;
         public Button BtnShowMenu
         {
@@ -65,8 +69,6 @@ namespace UnityEngine.UI
             set
             {
                 m_compMenuFrame = value;
-                if (value != null)
-                    m_vec3MenuFrameOriPos = value.transform.position;
             }
         }
         [HideInInspector][SerializeField] DropDownMenuItem m_compItemTemplate;
@@ -93,6 +95,18 @@ namespace UnityEngine.UI
                 m_compMask = value;
             }
         }
+        [HideInInspector][SerializeField] VerticalLayoutGroup m_compLayout;
+        public VerticalLayoutGroup Layout
+        {
+            get
+            {
+                return m_compLayout;
+            }
+            set
+            {
+                m_compLayout = value;
+            }
+        }
         [HideInInspector][SerializeField] bool m_bIsHiding = false;
         public bool IsHiding
         {
@@ -105,12 +119,59 @@ namespace UnityEngine.UI
                 m_bIsHiding = value;
             }
         }
-        [SerializeField] float m_fTweeningTime = 0.3f;
+        [SerializeField] public float m_fTweeningTime;
 
-        [SerializeField] private Vector3 m_vec3MenuFrameOriPos;
+        private bool m_bIsTweening = false;
+        private bool IsTweening
+        {
+            set
+            {
+                if (IsHiding)
+                    return;
+                if (value)
+                    Layout.enabled = false;
+                else
+                    Layout.enabled = true;
+            }
+            get
+            {
+                return m_bIsTweening;
+            }
+        }
         private RectTransform m_transCachedTrans;
 
-        public DropDownMenuItem AddItem(string itemDesc)
+        private void ResizeMenu()
+        {
+            RectTransform maskRect = (m_compMask.transform as RectTransform);
+            int childCnt = m_compMenuFrame.cachedTransform.childCount - 1;
+            childCnt = childCnt == 0 ? 1 : childCnt;
+            float cellY = m_compMenuFrame.grid.cellSize.y;
+            float topPadding = m_compMenuFrame.grid.padding.top;
+            float bottomPadding = m_compMenuFrame.grid.padding.bottom;
+            float spaceY = m_compMenuFrame.grid.spacing.y;
+            float reslutY = childCnt * cellY + (childCnt - 1) * spaceY + topPadding + bottomPadding;
+            maskRect.sizeDelta = new Vector2(maskRect.rect.width, reslutY);
+        }
+
+        public DropDownMenuItem AddSingleItem(string itemDesc)
+        {
+            DropDownMenuItem newItem = AddItemObj(itemDesc);
+            ResizeMenu();
+            return newItem;
+        }
+
+        public List<DropDownMenuItem> AddMultiItem(List<string> itemDescList)
+        {
+            List<DropDownMenuItem> newItemList = new List<DropDownMenuItem>();
+            for (int i = 0; i < itemDescList.Count; ++i)
+            {
+                AddItemObj(itemDescList[i]);
+            }
+            ResizeMenu();
+            return newItemList;
+        }
+
+        private DropDownMenuItem AddItemObj(string itemDesc)
         {
             DropDownMenuItem newItem = m_compItemTemplate.Copy();
             newItem.text = itemDesc;
@@ -118,9 +179,31 @@ namespace UnityEngine.UI
             return newItem;
         }
 
+        public void RemoveItem(GameObject target)
+        {
+            GameObject.Destroy(target);
+        }
+
+        public string CurItemDesc
+        {
+            get
+            {
+                if (m_txtSelectedItem != null)
+                    return m_txtSelectedItem.text;
+                return "";
+            }
+            set
+            {
+                if (m_txtSelectedItem != null)
+                    m_txtSelectedItem.text = value;
+            }
+        }
+
         private void OnShowMenu(PointerEventData evtDat)
         {
-            IsHiding = false;
+            if (IsTweening)
+                return;
+            IsTweening = true;
             m_btnShowMenu.gameObject.SetActive(false);
             m_btnHideMenu.gameObject.SetActive(true); 
             if (m_compMask != null)
@@ -128,7 +211,7 @@ namespace UnityEngine.UI
             if (m_compMenuFrame == null)
                 return;
             m_compMenuFrame.gameObject.SetActive(true);
-            Vector3 targetPos = m_vec3MenuFrameOriPos;
+            Vector3 targetPos = m_compMask.transform.position;
             Hashtable tweenArgs = new Hashtable();
             tweenArgs.Add("position", targetPos);
             tweenArgs.Add("time", m_fTweeningTime);
@@ -139,15 +222,18 @@ namespace UnityEngine.UI
 
         private void OnMenuShown()
         {
-            
+            IsHiding = false;
+            IsTweening = false;
         }
 
         private void OnHideMenu(PointerEventData evtDat)
         {
-            IsHiding = true;
+            if (IsTweening)
+                return;
+            IsTweening = true;
             m_btnShowMenu.gameObject.SetActive(true);
             m_btnHideMenu.gameObject.SetActive(false);
-            Vector3 targetPos = m_vec3MenuFrameOriPos + 
+            Vector3 targetPos = m_compMask.transform.position + 
                 m_compMenuFrame.cachedTransform.up * m_compMenuFrame.cachedTransform.rect.height * m_compMenuFrame.cachedTransform.lossyScale.y +
                 m_compMenuFrame.cachedTransform.up * m_transCachedTrans.rect.height * m_transCachedTrans.lossyScale.y;
             Hashtable tweenArgs = new Hashtable();
@@ -163,6 +249,23 @@ namespace UnityEngine.UI
             if (m_compMask != null)
                 m_compMask.gameObject.SetActive(false);
             m_compMenuFrame.gameObject.SetActive(false);
+            IsHiding = true;
+            IsTweening = false;
+        }
+
+        private void HideMenuWithoutAni()
+        {
+            IsHiding = true;
+            m_btnShowMenu.gameObject.SetActive(true);
+            m_btnHideMenu.gameObject.SetActive(false);
+            RectTransform maskRect = m_compMask.transform as RectTransform;
+            Vector3 targetPos = m_compMask.transform.position +
+                m_compMenuFrame.cachedTransform.up * maskRect.rect.height * maskRect.lossyScale.y +
+                m_compMenuFrame.cachedTransform.up * m_transCachedTrans.rect.height * m_transCachedTrans.lossyScale.y;
+            m_compMenuFrame.gameObject.SetActive(false);
+            m_compMenuFrame.cachedTransform.position = targetPos;
+            if (m_compMask != null)
+                m_compMask.gameObject.SetActive(false);
         }
 
         private void OnMenuStateChanged(PointerEventData evtDat)
@@ -182,6 +285,8 @@ namespace UnityEngine.UI
             if (m_txtSelectedItem != null)
                 m_txtSelectedItem.text = item.text;
             OnHideMenu(null);
+            if (onItemSelected != null)
+                onItemSelected.Invoke(item.gameObject);
         }
 
         protected override void Awake()
@@ -210,16 +315,15 @@ namespace UnityEngine.UI
             m_transCachedTrans = GetComponent<RectTransform>();
 
             //---------------test code
-            AddItem("Item A");
-            AddItem("Item B");
-            AddItem("Item C");
-            AddItem("Item D");
-            AddItem("Item E");
+            List<string> itemList = new List<string>{ "Item A", "Item B", "Item C", "Item D", "Item E", "Item F", "Item G", "Item H" };
+            AddMultiItem(itemList);
+
+            HideMenuWithoutAni();
         }
 
         void OnGUI()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonUp(0))
             {
                 if (!IsHiding)
                 {

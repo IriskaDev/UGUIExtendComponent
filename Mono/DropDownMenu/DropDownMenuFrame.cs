@@ -8,7 +8,7 @@ namespace UnityEngine.UI
     public class DropDownMenuFrame : MonoBehaviour
     {
         private RectTransform m_transSelf;
-        //private bool m_bExtendable = false;
+        private GridLayoutGroup m_compGrid;
 
 
         public RectTransform cachedTransform
@@ -19,9 +19,22 @@ namespace UnityEngine.UI
             }
         }
 
+        public GridLayoutGroup grid
+        {
+            get
+            {
+                return m_compGrid;
+            }
+        }
+
         void Awake()
         {
-            m_transSelf = GetComponent<RectTransform>();
+            m_transSelf = gameObject.GetComponent<RectTransform>();
+            m_compGrid = gameObject.GetComponent<GridLayoutGroup>();
+            if (m_compGrid == null)
+            {
+                m_compGrid = gameObject.AddComponent<GridLayoutGroup>();
+            }
         }
     }
 }
