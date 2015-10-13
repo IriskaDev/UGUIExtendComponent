@@ -6,7 +6,7 @@ public class DropMenuItemBase : IDropDownMenuItem
 {
     private GameObject m_objTargetItem;
 
-    public string GetItemDesc()
+    public virtual string GetItemDesc()
     {
         throw new NotImplementedException();
     }
