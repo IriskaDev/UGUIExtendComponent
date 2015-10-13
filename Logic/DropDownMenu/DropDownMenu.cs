@@ -9,6 +9,9 @@ namespace UnityEngine.UI.Logic
     {
         private DropDownMenu m_compMonoCtrl;
 
+        public delegate void ON_SELECTED_CALLBACK(T item);
+        public ON_SELECTED_CALLBACK onSelectedCallback;
+
         private List<T> m_lLogicInsList;
         private Dictionary<GameObject, T> m_dictLogicInsMapper;
 
@@ -67,6 +70,16 @@ namespace UnityEngine.UI.Logic
                 m_tCurSelectedItem = item;
                 m_compMonoCtrl.CurItemDesc = item.GetItemDesc();
             }
+        }
+
+        public void AddOnSelectedCallback(ON_SELECTED_CALLBACK func)
+        {
+            onSelectedCallback += func;
+        }
+
+        public void RemoveOnSelectedCallback(ON_SELECTED_CALLBACK func)
+        {
+            onSelectedCallback -= func;
         }
     }
 }
