@@ -37,20 +37,15 @@ namespace UnityEngine.UI
         public delegate void ON_ITEM_SELECTED(DropDownMenuItem item);
         private ON_ITEM_SELECTED onItemSelected;
 
-        public GameObject itemObj;
-        public RectTransform cachedTransform;
-
         protected override void Awake()
         {
             base.Awake();
-            itemObj = gameObject;
-            cachedTransform = gameObject.GetComponent<RectTransform>();
         }
 
         public DropDownMenuItem Copy(ScrollRect scrollRect = null)
         {
-            GameObject newItemObj = GameObject.Instantiate(itemObj) as GameObject;
-            newItemObj.transform.SetParent(itemObj.transform.parent, false);
+            GameObject newItemObj = GameObject.Instantiate(gameObject) as GameObject;
+            newItemObj.transform.SetParent(gameObject.transform.parent, false);
             newItemObj.SetActive(true);
             DropDownMenuItem newItemComp = newItemObj.GetComponent<DropDownMenuItem>();
             UGUIEventHandler.AddListener(newItemComp.ItemText.gameObject, UGUIEventType.POINTER_CLICK, newItemComp.OnItemSelected);
