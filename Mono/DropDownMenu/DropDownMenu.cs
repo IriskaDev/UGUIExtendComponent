@@ -259,11 +259,12 @@ namespace UnityEngine.UI
             m_btnShowMenu.gameObject.SetActive(true);
             m_btnHideMenu.gameObject.SetActive(false);
             RectTransform maskRect = m_compMask.transform as RectTransform;
+            RectTransform menuFrameRect = m_compMenuFrame.transform as RectTransform;
             Vector3 targetPos = m_compMask.transform.position +
-                m_compMenuFrame.cachedTransform.up * maskRect.rect.height * maskRect.lossyScale.y +
-                m_compMenuFrame.cachedTransform.up * m_transCachedTrans.rect.height * m_transCachedTrans.lossyScale.y;
+                menuFrameRect.up * maskRect.rect.height * maskRect.lossyScale.y +
+                menuFrameRect.up * m_transCachedTrans.rect.height * m_transCachedTrans.lossyScale.y;
             m_compMenuFrame.gameObject.SetActive(false);
-            m_compMenuFrame.cachedTransform.position = targetPos;
+            menuFrameRect.position = targetPos;
             if (m_compMask != null)
                 m_compMask.gameObject.SetActive(false);
         }
@@ -314,9 +315,9 @@ namespace UnityEngine.UI
 
             m_transCachedTrans = GetComponent<RectTransform>();
 
-            //---------------test code
-            List<string> itemList = new List<string>{ "Item A", "Item B", "Item C", "Item D", "Item E", "Item F", "Item G", "Item H" };
-            AddMultiItem(itemList);
+            ////---------------test code
+            //List<string> itemList = new List<string>{ "Item A", "Item B", "Item C", "Item D", "Item E", "Item F", "Item G", "Item H" };
+            //AddMultiItem(itemList);
 
             HideMenuWithoutAni();
         }
